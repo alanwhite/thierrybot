@@ -3,6 +3,7 @@ service: thierrybot
 package:
   exclude:
     - node_modules/aws-sdk/**
+    - docs/**
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
@@ -15,6 +16,9 @@ provider:
   stage: dev
   environment:
     ACTIVITY_LOG: ${self:service}-${opt:stage, self:provider.stage}-activity
+    LOG_EVENT : ${self:service}-${opt:stage, self:provider.stage}-logNotice
+    ORDER_EVENT : ${self:service}-${opt:stage, self:provider.stage}-orderNotice
+    POSITION_EVENT : ${self:service}-${opt:stage, self:provider.stage}-positionNotice
   region: eu-west-1
   iamRoleStatements:
     - Effect: "Allow"
@@ -35,7 +39,7 @@ functions:
     handler: functions/smsHandler.post
     memorySize: 128
     environment:
-      LOG_EVENT : ${self:service}-logNotice-${opt:stage, self:provider.stage}
+      LOG_EVENT : ${self:provider.environment.LOG_EVENT}
       ORDER_EVENT : ${self:service}-orderNotice-${opt:stage, self:provider.stage}
       POSITION_EVENT : ${self:service}-positionNotice-${opt:stage, self:provider.stage}
     events:
@@ -53,20 +57,20 @@ functions:
       TWILIO_PHONE_NUMBER : ${self:custom.secrets.TWILIO_PHONE_NUMBER}
       ALERT_PHONE_NUMBER : ${self:custom.secrets.ALERT_PHONE_NUMBER}
     events:
-      - sns: ${self:service}-logNotice-${opt:stage, self:provider.stage}
-      - sns: ${self:service}-orderNotice-${opt:stage, self:provider.stage}
-      - sns: ${self:service}-positionNotice-${opt:stage, self:provider.stage}
+      - sns: ${self:provider.environment.LOG_EVENT}
+      - sns: ${self:provider.environment.ORDER_EVENT}
+      - sns: ${self:provider.environment.POSITION_EVENT}
   order:
     handler: functions/orderHandler.notify
     memorySize: 128
     environment:
-      LOG_EVENT : ${self:service}-logNotice-${opt:stage, self:provider.stage}
+      LOG_EVENT : ${self:provider.environment.LOG_EVENT}
     events:
-      - sns: ${self:service}-orderNotice-${opt:stage, self:provider.stage}
+      - sns: ${self:provider.environment.ORDER_EVENT}
   position:
     handler: functions/positionHandler.notify
     memorySize: 128
     environment:
-      LOG_EVENT : ${self:service}-logNotice-${opt:stage, self:provider.stage}
+      LOG_EVENT : ${self:provider.environment.LOG_EVENT}
     events:
-      - sns: ${self:service}-positionNotice-${opt:stage, self:provider.stage}
+      - sns: ${self:provider.environment.POSITION_EVENT}
