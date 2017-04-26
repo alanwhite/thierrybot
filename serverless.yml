@@ -1,0 +1,72 @@
+service: thierrybot
+
+package:
+  exclude:
+    - node_modules/aws-sdk/**
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+plugins:
+  - serverless-secrets-plugin
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  environment:
+    ACTIVITY_LOG: ${self:service}-${opt:stage, self:provider.stage}-activity
+  region: eu-west-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - 'sdb:GetAttributes'
+        - 'sdb:PutAttributes'
+      Resource: "arn:aws:sdb:${self:provider.region}:*:domain/${self:provider.environment.ACTIVITY_LOG}"
+    - Effect: "Allow"
+      Resource: "*"
+      Action:
+        - "sns:*"
+
+custom:
+  secrets: ${file(secrets.${opt:stage, self:provider.stage}.yml)}
+
+functions:
+  sms:
+    handler: functions/smsHandler.post
+    memorySize: 128
+    environment:
+      LOG_EVENT : ${self:service}-logNotice-${opt:stage, self:provider.stage}
+      ORDER_EVENT : ${self:service}-orderNotice-${opt:stage, self:provider.stage}
+      POSITION_EVENT : ${self:service}-positionNotice-${opt:stage, self:provider.stage}
+    events:
+      - http:
+          path: sms
+          method: post
+          cors: true
+  log:
+    handler: functions/logHandler.notify
+    memorySize: 128
+    environment:
+      ACTIVITY_LOG : ${self:provider.environment.ACTIVITY_LOG}
+      TWILIO_ACCOUNT_SID : ${self:custom.secrets.TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN : ${self:custom.secrets.TWILIO_AUTH_TOKEN}
+      TWILIO_PHONE_NUMBER : ${self:custom.secrets.TWILIO_PHONE_NUMBER}
+      ALERT_PHONE_NUMBER : ${self:custom.secrets.ALERT_PHONE_NUMBER}
+    events:
+      - sns: ${self:service}-logNotice-${opt:stage, self:provider.stage}
+      - sns: ${self:service}-orderNotice-${opt:stage, self:provider.stage}
+      - sns: ${self:service}-positionNotice-${opt:stage, self:provider.stage}
+  order:
+    handler: functions/orderHandler.notify
+    memorySize: 128
+    environment:
+      LOG_EVENT : ${self:service}-logNotice-${opt:stage, self:provider.stage}
+    events:
+      - sns: ${self:service}-orderNotice-${opt:stage, self:provider.stage}
+  position:
+    handler: functions/positionHandler.notify
+    memorySize: 128
+    environment:
+      LOG_EVENT : ${self:service}-logNotice-${opt:stage, self:provider.stage}
+    events:
+      - sns: ${self:service}-positionNotice-${opt:stage, self:provider.stage}

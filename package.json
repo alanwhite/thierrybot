@@ -1,0 +1,27 @@
+{
+  "name": "thierrybot",
+  "version": "1.0.0",
+  "description": "Robot trader for Thierry",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alanwhite/thierrybot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alanwhite/thierrybot/issues"
+  },
+  "homepage": "https://github.com/alanwhite/thierrybot#readme",
+  "devDependencies": {
+    "aws-sdk": "^2.45.0",
+    "jshint": "^2.9.4",
+    "serverless-secrets-plugin": "0.0.1"
+  }
+}
