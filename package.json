@@ -4,7 +4,7 @@
   "description": "Robot trader for Thierry",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,9 @@
   "homepage": "https://github.com/alanwhite/thierrybot#readme",
   "devDependencies": {
     "aws-sdk": "^2.45.0",
+    "chai": "^3.5.0",
     "jshint": "^2.9.4",
+    "mocha": "^3.3.0",
     "serverless-secrets-plugin": "0.0.1"
   },
   "dependencies": {
