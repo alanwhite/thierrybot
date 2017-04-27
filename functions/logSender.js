@@ -10,7 +10,7 @@ class LogSender {
   log(message, sms) {
 
     const eventBody = {
-      time: Date.now().toUTCString(),
+      time: new Date().toUTCString(),
       escalate: "no",
       body: message
     };
@@ -22,7 +22,7 @@ class LogSender {
     }
 
     const params = {
-      Message: eventBody,
+      Message: JSON.stringify(eventBody),
       TopicArn: 'arn:aws:sns:eu-west-1:248211596106:'+LOG_EVENT, // yeah TODO: find a way to obtain aws id
     };
 

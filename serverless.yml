@@ -40,8 +40,11 @@ functions:
     memorySize: 128
     environment:
       LOG_EVENT : ${self:provider.environment.LOG_EVENT}
-      ORDER_EVENT : ${self:service}-orderNotice-${opt:stage, self:provider.stage}
-      POSITION_EVENT : ${self:service}-positionNotice-${opt:stage, self:provider.stage}
+      ORDER_EVENT : ${self:provider.environment.ORDER_EVENT}
+      POSITION_EVENT : ${self:provider.environment.POSITION_EVENT}
+      TWILIO_PHONE_NUMBER : ${self:custom.secrets.TWILIO_PHONE_NUMBER}
+      ALERT_PHONE_NUMBER : ${self:custom.secrets.ALERT_PHONE_NUMBER}
+      SERVICE_PHONE : ${self:custom.secrets.SERVICE_PHONE}
     events:
       - http:
           path: sms
