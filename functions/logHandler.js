@@ -1,4 +1,4 @@
-const LogManager = require('./logManager.js');
+const LogManager = require('./LogManager.js');
 const logManager = new LogManager();
 
 // wrap aws pub/sub SNS event receiver

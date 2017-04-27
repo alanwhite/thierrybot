@@ -1,5 +1,5 @@
 const qs = require('qs');
-const LogSender = require('./logSender.js');
+const LogSender = require('./LogSender.js');
 const logSender = new LogSender();
 
 const SERVICE_PHONE = process.env.SERVICE_PHONE;
@@ -10,7 +10,7 @@ module.exports.post = (event, context, callback) => {
 
   //Return 200 to Twilio
   callback(null, {
-      statusCode: '200'
+      statusCode: '204' // No content
   });
 
   logSender.log(event.body);
