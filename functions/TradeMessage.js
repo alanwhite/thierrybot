@@ -129,7 +129,9 @@ class TradeMessage {
         isNaN(tradeMessage.stopPrice) ) {
           console.log("Error parsing instruction: non-numeric price");
           return;
-        }
+      }
+
+      tradeMessage.serial = Date.now();
     }
 
     return tradeMessages;
