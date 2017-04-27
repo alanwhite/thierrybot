@@ -1,18 +1,17 @@
 class TradeMessage {
   constructor() {
-  //  this.message = {
-      this.serial = 0,
-      this.instruction = "none",
-      this.entity = "none",
-      this.direction = "none",
-      this.instrument = "IX.D.FTSE.DAILY.IP",
-      this.atPrice = 0,
-      this.limitPrice = 0,
-      this.stopPrice = 0,
-      this.confidence = 0
-  //  };
+    this.serial = 0,
+    this.instruction = "none",
+    this.entity = "none",
+    this.direction = "none",
+    this.instrument = "IX.D.FTSE.DAILY.IP",
+    this.atPrice = 0,
+    this.limitPrice = 0,
+    this.stopPrice = 0,
+    this.confidence = 0
   }
 
+  // parses plain text instruction and returns a TradeMessage if valid, else null
   static parse(text) {
     var tradeMessages = [];
 
@@ -69,8 +68,9 @@ class TradeMessage {
               tradeMessage.instruction = 'amend';
               tradeMessage.entity = 'position';
               tradeMessage.direction = words[2] == 'long' ? 'buy' : 'sell';
-              tradeMessage.limitPrice = Number(words[13]);
+              tradeMessage.limitPrice = Number(words[8]);
               tradeMessage.stopPrice = Number(words[11]);
+              // console.log(words);
               tradeMessages.push(tradeMessage);
               break;
             default:
@@ -83,7 +83,7 @@ class TradeMessage {
           tradeMessage.instruction = 'cancel';
           tradeMessage.entity = 'order';
           tradeMessage.direction = words[3];
-          tradeMessage.atPrice = Number(words[8]);
+          tradeMessage.atPrice = words[4] == 'FTSE' ? Number(words[8]) : Number(words[5]);
           tradeMessages.push(tradeMessage);
           break;
 
@@ -122,9 +122,16 @@ class TradeMessage {
           return;
       }
 
+      // validate entries
+      if (
+        isNaN(tradeMessage.atPrice) ||
+        isNaN(tradeMessage.limitPrice) ||
+        isNaN(tradeMessage.stopPrice) ) {
+          console.log("Error parsing instruction: non-numeric price");
+          return;
+        }
     }
 
-    // console.log("returning "+tradeMessages);
     return tradeMessages;
   }
 }
