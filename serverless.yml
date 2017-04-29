@@ -42,6 +42,7 @@ functions:
       LOG_EVENT : ${self:provider.environment.LOG_EVENT}
       ORDER_EVENT : ${self:provider.environment.ORDER_EVENT}
       POSITION_EVENT : ${self:provider.environment.POSITION_EVENT}
+      TWILIO_AUTH_TOKEN : ${self:custom.secrets.TWILIO_AUTH_TOKEN}
       TWILIO_PHONE_NUMBER : ${self:custom.secrets.TWILIO_PHONE_NUMBER}
       ALERT_PHONE_NUMBER : ${self:custom.secrets.ALERT_PHONE_NUMBER}
       SERVICE_PHONE : ${self:custom.secrets.SERVICE_PHONE}

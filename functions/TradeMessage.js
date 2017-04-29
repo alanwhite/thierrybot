@@ -1,19 +1,24 @@
 class TradeMessage {
   constructor() {
-    this.serial = 0,
-    this.instruction = "none",
-    this.entity = "none",
-    this.direction = "none",
-    this.instrument = "IX.D.FTSE.DAILY.IP",
-    this.atPrice = 0,
-    this.limitPrice = 0,
-    this.stopPrice = 0,
-    this.confidence = 0
+    this.serial = 0;
+    this.instruction = "none";
+    this.entity = "none";
+    this.direction = "none";
+    this.instrument = "IX.D.FTSE.DAILY.IP";
+    this.atPrice = 0;
+    this.limitPrice = 0;
+    this.stopPrice = 0;
+    this.confidence = 0;
   }
 
   // parses plain text instruction and returns a TradeMessage if valid, else null
   static parse(text) {
     var tradeMessages = [];
+
+    if ( typeof text != 'string' ) {
+      console.log("Error parsing text: no string supplied");
+      return;
+    }
 
     var sentences = text.split(".");
     if ( sentences.length < 2 ) {

@@ -6,7 +6,7 @@ class ConfirmThierry {
     const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
     const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
     const twilioPhoneNumber = '+447481337667';
-    const notifyPhoneNumber = '+447921098947';
+    const notifyPhoneNumber = '+447768058433';
     const twilioClient = require('twilio')(twilioAccountSid, twilioAuthToken);
 
     const sms = {
