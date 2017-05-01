@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "qs": "^6.4.0",
+    "request": "^2.81.0",
+    "restler": "^3.4.0",
     "twilio": "^2.11.1"
   }
 }

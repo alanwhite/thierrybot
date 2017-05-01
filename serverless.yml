@@ -35,6 +35,7 @@ custom:
   secrets: ${file(secrets.${opt:stage, self:provider.stage}.yml)}
 
 functions:
+  
   sms:
     handler: functions/smsHandler.post
     memorySize: 128
@@ -51,6 +52,7 @@ functions:
           path: sms
           method: post
           cors: true
+
   log:
     handler: functions/logHandler.notify
     memorySize: 128
@@ -64,17 +66,25 @@ functions:
       - sns: ${self:provider.environment.LOG_EVENT}
       - sns: ${self:provider.environment.ORDER_EVENT}
       - sns: ${self:provider.environment.POSITION_EVENT}
+
   order:
     handler: functions/orderHandler.notify
     memorySize: 128
     environment:
       LOG_EVENT : ${self:provider.environment.LOG_EVENT}
+      IG_API_KEY: ${self:custom.secrets.IG_API_KEY}
+      IG_USERNAME: ${self:custom.secrets.IG_USERNAME}
+      IG_PASSWORD: ${self:custom.secrets.IG_PASSWORD}
     events:
       - sns: ${self:provider.environment.ORDER_EVENT}
+
   position:
     handler: functions/positionHandler.notify
     memorySize: 128
     environment:
       LOG_EVENT : ${self:provider.environment.LOG_EVENT}
+      IG_API_KEY: ${self:custom.secrets.IG_API_KEY}
+      IG_USERNAME: ${self:custom.secrets.IG_USERNAME}
+      IG_PASSWORD: ${self:custom.secrets.IG_PASSWORD}
     events:
       - sns: ${self:provider.environment.POSITION_EVENT}
