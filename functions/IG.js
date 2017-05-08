@@ -11,8 +11,7 @@
 
 var rest = require('restler');
 
-const API = 'https://api.ig.com/gateway/deal/';
-const DEMO_API = 'https://demo-api.ig.com/gateway/deal/';
+const IG_HOST = process.env.IG_HOST;
 
 
 /**
@@ -24,15 +23,13 @@ const DEMO_API = 'https://demo-api.ig.com/gateway/deal/';
  */
 
 class IG {
-  constructor(key, identifier, password, demo) {
+  constructor(key, identifier, password) {
     this.key = key;
     this.identifier = identifier;
     this.password = password;
     this.token = '';
     this.cst = '';
-    this.ighost = API;
-    if ( demo )
-      this.ighost = DEMO_API;
+    this.ighost = IG_HOST;
   };
 
   /**
@@ -61,19 +58,26 @@ class IG {
     switch (method) {
       case 'post':
         rest.postJson(url, data, {headers: headers}).on('complete', function (data, res) {
-          callback(null, data);
+          callback(res.statusCode === 200 ? null : res.statusCode, data);
         });
         break;
 
       case 'get':
         rest.json(url, data, {headers: headers}).on('complete', function (data, res) {
-          callback(null, data);
+          callback(res.statusCode === 200 ? null : res.statusCode, data);
         });
         break;
 
       case 'delete':
-        rest.del(url, data, {headers: headers}).on('complete', function (data, res) {
-          callback(null, data);
+        headers['_method'] = 'DELETE';
+        rest.postJson(url, data, {headers: headers}).on('complete', function (data, res) {
+          callback(res.statusCode === 200 ? null : res.statusCode, data);
+        });
+        break;
+
+      case 'put':
+        rest.putJson(url, data, {headers: headers}).on('complete', function (data, res) {
+          callback(res.statusCode === 200 ? null : res.statusCode, data);
         });
         break;
 
@@ -102,6 +106,8 @@ class IG {
     };
 
     rest.postJson(this.ighost + 'session', credentials, {headers: headers}).on('complete', (data, res) => {
+      console.log(data);
+      console.log(res.statusCode);
       this.cst = res.headers['cst'];
       this.token = res.headers['x-security-token'];
       callback(null,data);
@@ -144,6 +150,16 @@ class IG {
     this._request('get', 'positions', null, 2, callback);
   };
 
+  // amends an open position
+  amendPosition(dealId, options, callback) {
+    this._request('put', 'positions/otc/'+dealId, options, 2, callback);
+  }
+
+  // closes an open position
+  closePosition(options, callback) {
+    this._request('delete', 'positions/otc/', options, 1, callback);
+  }
+
   // Returns all open sprint market positions for the active account.
   positionsSprintMarkets(callback) {
     this._request('get', 'positions/sprintmarkets', null, 2, callback);
@@ -153,6 +169,26 @@ class IG {
   workingOrders(callback) {
     this._request('get', 'workingorders', null, 2, callback);
   };
+
+  // creates a new working order
+  createOrder(options, callback) {
+    this._request('post', 'workingorders/otc', options, 2, callback);
+  }
+
+  // returns the confirms for a deal reference
+  confirms(dealReference, callback) {
+    this._request('get', 'confirms/'+dealReference, null, 1, callback);
+  }
+
+  // deletes a working order
+  deleteOrder(dealId, callback) {
+    this._request('delete', 'workingorders/otc/'+dealId, null, 2, callback);
+  }
+
+  // amends a working order
+  amendOrder(dealId, options, callback) {
+    this._request('put', 'workingorders/otc/'+dealId, options, 2, callback);
+  }
 
   /**
    * Markets
@@ -168,6 +204,11 @@ class IG {
   // By default returns the minute prices within the last 10 minutes.
   prices(epic, callback) {
     this._request('get', 'prices/' + epic, null, 3, callback);
+  };
+
+  // Returns details of a market
+  markets(epic, callback) {
+    this._request('get', 'markets/'+epic, null, 3, callback);
   };
 
   /**
