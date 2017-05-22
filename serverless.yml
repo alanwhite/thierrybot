@@ -35,7 +35,7 @@ custom:
   secrets: ${file(secrets.${opt:stage, self:provider.stage}.yml)}
 
 functions:
-  
+
   sms:
     handler: functions/smsHandler.post
     memorySize: 128
@@ -75,6 +75,7 @@ functions:
       IG_API_KEY: ${self:custom.secrets.IG_API_KEY}
       IG_USERNAME: ${self:custom.secrets.IG_USERNAME}
       IG_PASSWORD: ${self:custom.secrets.IG_PASSWORD}
+      IG_HOST: ${self:custom.secrets.IG_HOST}
     events:
       - sns: ${self:provider.environment.ORDER_EVENT}
 
@@ -86,5 +87,6 @@ functions:
       IG_API_KEY: ${self:custom.secrets.IG_API_KEY}
       IG_USERNAME: ${self:custom.secrets.IG_USERNAME}
       IG_PASSWORD: ${self:custom.secrets.IG_PASSWORD}
+      IG_HOST: ${self:custom.secrets.IG_HOST}
     events:
       - sns: ${self:provider.environment.POSITION_EVENT}

@@ -9,7 +9,9 @@ const IG_PASSWORD = process.env.IG_PASSWORD;
 
 class OrderManager {
   constructor() {
-    this.ig = new IG(process.env.IGKEY,process.env.IGUSER,process.env.IGPASS);
+    this.ig = new IG(process.env.IG_API_KEY,process.env.IG_USERNAME,process.env.IG_PASSWORD);
+    console.log("Order Manager IG Object: ");
+    console.log(this.ig);
   }
 
   processMessage(tradeMessages, mainCallback) {
@@ -59,7 +61,11 @@ class OrderManager {
 
   executeInstructions(tradeMessages, cb) {
 
-    async.each( tradeMessages, (tradeMessage, callback) => {
+    const message = JSON.parse(tradeMessages);
+    const body = JSON.parse(message.body);
+
+    async.each( body, (tradeMessage, callback) => {
+      console.log(tradeMessage);
       switch(tradeMessage.instruction) {
         case 'create':
           this.createOrder(tradeMessage, callback);
@@ -71,7 +77,7 @@ class OrderManager {
           this.cancelOrder(tradeMessage, callback);
           break;
         default:
-          logSender.log("Error: unknown order instruction", true);
+          // logSender.log("Error: unknown order instruction", true);
           callback(new Error("unknown order instruction"));
       }
 

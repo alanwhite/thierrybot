@@ -1,12 +1,12 @@
 const async = require("async");
 
-const OrderManager = require("./OrderManager.js");
+const OrderManager = require("../functions/OrderManager.js");
 const om = new OrderManager();
 
-const PositionManager = require("./PositionManager.js");
+const PositionManager = require("../functions/PositionManager.js");
 const pm = new PositionManager();
 
-const TradeMessage = require("./TradeMessage.js");
+const TradeMessage = require("../functions/TradeMessage.js");
 
 var sellMsg = new TradeMessage();
 sellMsg.instruction = "create";
@@ -63,6 +63,11 @@ async.series([
     var test5 = [ cancelMsg, sellMsg ];
     console.log("\nlaunching cancel sell order & replace test\n");
     om.processMessage(test5, callback);
+  },
+  function(callback) {
+    var test3 = [ cancelMsg ];
+    console.log("\nlaunching cancel sell order test (cleanup)\n");
+    om.processMessage(test3, callback);
   },
   function(callback) {
     var test6 = [ cancelPosn ];

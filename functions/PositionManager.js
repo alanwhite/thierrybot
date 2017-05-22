@@ -9,7 +9,8 @@ const IG_PASSWORD = process.env.IG_PASSWORD;
 
 class PositionManager {
   constructor() {
-    this.ig = new IG(process.env.IGKEY,process.env.IGUSER,process.env.IGPASS);
+    this.ig = new IG(process.env.IG_API_KEY,process.env.IG_USERNAME,process.env.IG_PASSWORD);
+    console.log("Position Manager IG Object: "+this.ig);
   }
 
   processMessage(tradeMessages, mainCallback) {
@@ -58,8 +59,10 @@ class PositionManager {
   }
 
   executeInstructions(tradeMessages, cb) {
+    const message = JSON.parse(tradeMessages);
+    const body = JSON.parse(message.body);
 
-    async.each( tradeMessages, (tradeMessage, callback) => {
+    async.each( body, (tradeMessage, callback) => {
       switch(tradeMessage.instruction) {
         case 'amend':
           this.amendPosition(tradeMessage, callback);
@@ -68,7 +71,7 @@ class PositionManager {
           this.closePosition(tradeMessage, callback);
           break;
         default:
-          logSender.log("Error: unknown position instruction", true);
+          // logSender.log("Error: unknown position instruction", true);
           callback(new Error("unknown position instruction"));
       }
 
@@ -137,6 +140,13 @@ class PositionManager {
         return callback( new Error("no position to close"));
       }
 
+      // set direction opposite to existing trade direction
+      if ( data.direction == 'SELL' ) {
+        data.direction = 'BUY';
+      } else {
+        data.direction = 'SELL';
+      }
+
       console.log("attempting to close");
       this.ig.closePosition(data, (err, data) => {
         if ( err ) {
@@ -148,7 +158,7 @@ class PositionManager {
             if ( err )
               callback(err);
             else {
-              console.log("Confirm "+data.dealId+" dealStatus "+data.dealStatus+" status "+data.status);
+              console.log("Confirm "+data.dealId+" dealStatus "+data.dealStatus+" status "+data.reason);
               callback();
             }
           });
@@ -172,7 +182,7 @@ class PositionManager {
       console.log(positionList);
       for ( var i=0; i<listLength; i++ ) {
         if ( tradeMessage.direction.toUpperCase() == positionList[i].position.direction &&
-              tradeMessage.instrument == positionList[i].position.epic ) {
+              tradeMessage.instrument == positionList[i].market.epic ) {
           console.log("Found "+positionList[i].position.dealId);
           var returnValue = {
             dealId: positionList[i].position.dealId,

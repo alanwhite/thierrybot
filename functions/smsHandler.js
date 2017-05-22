@@ -57,6 +57,7 @@ module.exports.post = (event, context, callback) => {
     return logSender.log("Error: cannot understand text message", true);
   }
 
+  console.log("Trade Messages Constructed: "+tradeMessages);
   // I hate javascript
   function pubCallback(error) {
     if (error) {
@@ -71,9 +72,9 @@ module.exports.post = (event, context, callback) => {
   var positionMessages = [];
 
   for ( var i=0; i < tradeMessages.length; i++ ) {
-    if ( tradeMessages[i].entity = 'order' ) {
+    if ( tradeMessages[i].entity == 'order' ) {
       orderMessages.push(tradeMessages[i]);
-    } else if ( tradeMessages[i].entity = 'position' ) {
+    } else if ( tradeMessages[i].entity == 'position' ) {
       positionMessages.push(tradeMessages[i]);
     } else {
       return logSender.log("Error: unknown entity type in parsed SMS", true);
@@ -81,6 +82,7 @@ module.exports.post = (event, context, callback) => {
   }
 
   if ( orderMessages.length > 0 ) {
+    console.log("Sending Order Messages: "+orderMessages);
     const eventBody = {
       time: new Date().toUTCString(),
       escalate: "no",
@@ -97,6 +99,7 @@ module.exports.post = (event, context, callback) => {
   }
 
   if ( positionMessages.length > 0 ) {
+    console.log("Sending Position Messages: "+positionMessages);
     const eventBody = {
       time: new Date().toUTCString(),
       escalate: "no",
