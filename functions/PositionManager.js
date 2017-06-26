@@ -181,8 +181,7 @@ class PositionManager {
       const listLength = positionList.length;
       console.log(positionList);
       for ( var i=0; i<listLength; i++ ) {
-        if ( tradeMessage.direction.toUpperCase() == positionList[i].position.direction &&
-              tradeMessage.instrument == positionList[i].market.epic ) {
+        if ( tradeMessage.instrument == positionList[i].market.epic ) {
           console.log("Found "+positionList[i].position.dealId);
           var returnValue = {
             dealId: positionList[i].position.dealId,

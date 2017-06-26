@@ -40,8 +40,15 @@ module.exports.post = (event, context, callback) => {
   const recvdBy = data['To'];
   const sender = data['From'];
   const message = data['Body'];
+  const valid_senders = SERVICE_PHONE.split(",");
 
-  if ( !(sender == SERVICE_PHONE || sender == ALERT_PHONE_NUMBER) ) {
+  // 2017-05-24: sometimes the senders phone number includes 44 other times not, moved
+  //             secrets entry to be an array of valid senders
+  // if ( !(sender == SERVICE_PHONE || sender == ALERT_PHONE_NUMBER) ) {
+  //   return logSender.log("Error: message triggered from unknown number", true);
+  // }
+
+  if ( !valid_senders.includes(sender) ) {
     return logSender.log("Error: message triggered from unknown number", true);
   }
 
